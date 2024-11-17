@@ -37,24 +37,25 @@ suspend fun ChatInputCommandInteraction.check() {
 	val advantage = effect == "advantage"
 	val disadvantage = effect == "disadvantage"
 
-	val roll = (1..100).random()
-	val eff = (0..9).random()
-	val value = if (advantage && eff * 10 < roll) {
-		maxOf(1, roll % 10 + eff * 10)
-	} else if (disadvantage && eff * 10 > roll) {
-		maxOf(1, roll % 10 + eff * 10)
+	val roll1 = (1..100).random()
+	val roll2 = (1..10).random()
+
+	val eff = roll2 % 10
+	val value = if ((advantage && eff * 10 < roll1) || (disadvantage && eff * 10 > roll1)) {
+		if (roll1 % 10 == 0 && eff == 0) 10
+		else roll1 % 10 + eff * 10
 	} else {
-		roll
+		roll1
 	}
 
 	val message = if (advantage) {
-		logger.info("User '${user.username}' rolling with advantage -> $roll, $eff")
-		"<:roll:1307377035471224892> | $roll & ⬇$eff = **$value**"
+		logger.info("User '${user.username}' rolling with advantage -> $roll1, $roll2")
+		"<:roll:1307377035471224892> | $roll1 (⬇$roll2) = **$value**"
 	} else if (disadvantage) {
-		logger.info("User '${user.username}' rolling with disadvantage -> $roll, $eff")
-		"<:roll:1307377035471224892> | $roll & ⬆$eff = **$value**"
+		logger.info("User '${user.username}' rolling with disadvantage -> $roll1, $eff")
+		"<:roll:1307377035471224892> | $roll1 (⬆$roll2) = **$value**"
 	} else {
-		logger.info("User '${user.username}' rolling -> $roll")
+		logger.info("User '${user.username}' rolling -> $roll1")
 		"<:roll:1307377035471224892> | **$value**"
 	}
 
